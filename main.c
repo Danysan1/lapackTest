@@ -12,7 +12,7 @@
 // https://software.intel.com/en-us/node/520748
 // https://software.intel.com/en-us/node/520774
 
-void stampaMatrice(float *matrice, unsigned righe, unsigned colonne);
+void stampaMatrice(char *titolo, float *matrice, unsigned righe, unsigned colonne);
 float *creaMatrice(unsigned righe, unsigned colonne);
 float *creaVettore(unsigned dim);
 
@@ -73,7 +73,8 @@ int main(int argc, char *argv[])
 }
 
 
-void stampaMatrice(float matrice[], unsigned righe, unsigned colonne){
+void stampaMatrice(char *titolo, float *matrice, unsigned righe, unsigned colonne){
+    puts(titolo);
     unsigned riga, colonna;
     for(riga=0; riga<righe; riga++){
         for(colonna=0; colonna<colonne; colonna++){
@@ -130,15 +131,12 @@ void moltiplicaMatriceVettore(){
     float y[MV_M] = {0,0};
     float a = 1, b = 1;
 
-    puts("\nMatrice:");
-    stampaMatrice(A, MV_M, MV_N);
-    puts("\nVettore:");
-    stampaMatrice(x, 1, MV_N);
+    stampaMatrice("Matrice:", A, MV_M, MV_N);
+    stampaMatrice("Vettore:", x, 1, MV_N);
 
     cblas_sgemv(CblasRowMajor, CblasNoTrans, MV_M, MV_N, a, A, MV_LDA, x, MV_INC_X, b, y, MV_INC_Y); // https://software.intel.com/en-us/node/520750
 
-    puts("\nRisultato:");
-    stampaMatrice(y, 1, MV_M);
+    stampaMatrice("Risultato:", y, 1, MV_M);
 }
 
 
@@ -155,15 +153,12 @@ void moltiplicaMatriceVettoreInterattivo(){
     memset(y, 0, n*sizeof(float));
     float a = 1, b = 1;
 
-    puts("\nMatrice:");
-    stampaMatrice(A, m, n);
-    puts("\nVettore:");
-    stampaMatrice(x, 1, n);
+    stampaMatrice("Matrice:", A, m, n);
+    stampaMatrice("Vettore:", x, 1, n);
 
     cblas_sgemv(CblasRowMajor, CblasNoTrans, m, n, a, A, n, x, 1, b, y, 1); // https://software.intel.com/en-us/node/520750
 
-    puts("\nRisultato:");
-    stampaMatrice(y, 1, m);
+    stampaMatrice("Risultato:", y, 1, m);
 
     free(A);
     free(x);
@@ -194,21 +189,39 @@ void moltiplicaMatrici(){
                              0, 0};
     float a = 1, b = 1;
 
-    puts("\nMatrice A:");
-    stampaMatrice(A, MM_M, MM_K);
-    puts("\nMatrice B:");
-    stampaMatrice(B, MM_K, MM_N);
-    puts("\nMatrice C:");
-    stampaMatrice(C, MM_M, MM_N);
+    stampaMatrice("Matrice A:", A, MM_M, MM_K);
+    stampaMatrice("Matrice B:", B, MM_K, MM_N);
 
     cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, MM_M, MM_N, MM_K, a, A, MM_LDA, B, MM_LDB, b, C, MM_LDC); // https://software.intel.com/en-us/node/520775
 
-    puts("\nRisultato:");
-    stampaMatrice(C, MM_M, MM_N);
+    stampaMatrice("Risultato:", C, MM_M, MM_N);
 }
 
 void moltiplicaMatriciInterattivo(){
+    lapack_int m, n, k;
+    printf("Numero righe della prima matrice? ");
+    scanf("%d", &m);
+    printf("Numero colonne della seconda matrice? ");
+    scanf("%d", &n);
+    printf("Dimensione comune? ");
+    scanf("%d", &k);
 
+    float *A = creaMatrice(m, k);
+    float *B = creaMatrice(k, n);
+    float *C = (float*)malloc(m*n*sizeof(float));
+    memset(C, 0, m*n*sizeof(float));
+    float a = 1, b = 1;
+
+    stampaMatrice("Matrice A:", A, m, k);
+    stampaMatrice("Matrice B:", B, k, n);
+
+    cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, m, n, k, a, A, k, B, n, b, C, n); // https://software.intel.com/en-us/node/520775
+
+    stampaMatrice("Risultato:", C, m, n);
+
+    free(A);
+    free(B);
+    free(C);
 }
 
 
@@ -237,18 +250,15 @@ void sistemaLineare(){
                                 1,
                                 4};
 
-    puts("\nMatrice A:");
-    stampaMatrice(a, SIS_N, SIS_LDA);
-    puts("\nMatrice B:");
-    stampaMatrice(b, SIS_N, SIS_LDB);
+    stampaMatrice("Matrice A:", a, SIS_N, SIS_LDA);
+    stampaMatrice("Matrice B:", b, SIS_N, SIS_LDB);
 
     lapack_int indiciPivot[SIS_N];
     lapack_int info = LAPACKE_sgesv(LAPACK_ROW_MAJOR, SIS_N, SIS_NRHS, a, SIS_LDA, indiciPivot, b, SIS_LDB); // https://software.intel.com/en-us/node/520973
     if(info)
         printf("\nErrore %d",info);
     else {
-        puts("\nRisultato:");
-        stampaMatrice(b, SIS_N, SIS_LDB);
+        stampaMatrice("Risultato:", b, SIS_N, SIS_LDB);
     }
 }
 
@@ -262,18 +272,15 @@ void sistemaLineareInterattivo(){
     float *a = creaMatrice(n,n),
             *b = creaMatrice(n,nrhs);
 
-    puts("\nMatrice A:");
-    stampaMatrice(a, n, n);
-    puts("\nMatrice B:");
-    stampaMatrice(b, n, nrhs);
+    stampaMatrice("Matrice A:", a, n, n);
+    stampaMatrice("Matrice B:", b, n, nrhs);
 
     lapack_int *indiciPivot = (int*)malloc(n*sizeof(int));
     lapack_int info = LAPACKE_sgesv(LAPACK_ROW_MAJOR, n, nrhs, a, n, indiciPivot, b, nrhs); // https://software.intel.com/en-us/node/520973
     if(info)
         printf("\nErrore %d",info);
     else {
-        puts("\nRisultato:");
-        stampaMatrice(b, n, 1);
+        stampaMatrice("Risultato:", b, n, 1);
     }
 
     free(a);
@@ -299,8 +306,7 @@ void inversa(){
                                0, 1, 0,
                                2, 1, 1};
 
-    puts("\nMatrice:");
-    stampaMatrice(a, INV_M, INV_N);
+    stampaMatrice("Matrice:", a, INV_M, INV_N);
 
     lapack_int indiciPivot[INV_N];
     lapack_int info = LAPACKE_sgetrf(LAPACK_ROW_MAJOR, INV_M, INV_N, a, INV_LDA, indiciPivot); // https://software.intel.com/en-us/node/520877
@@ -311,8 +317,7 @@ void inversa(){
         if(info)
             printf("\nErrore %d",info);
         else {
-            puts("\nInversa:");
-            stampaMatrice(a, 3, 3);
+            stampaMatrice("Inversa:", a, 3, 3);
         }
     }
 }
@@ -325,8 +330,7 @@ void inversaInterattivo(){
 
     float *a = creaMatrice(n,n);
 
-    puts("\nMatrice A:");
-    stampaMatrice(a, n, n);
+    stampaMatrice("Matrice A:", a, n, n);
 
     lapack_int *indiciPivot = (int*)malloc(n*sizeof(int));
     lapack_int info = LAPACKE_sgetrf(LAPACK_ROW_MAJOR, n, n, a, n, indiciPivot); // https://software.intel.com/en-us/node/520877
@@ -337,8 +341,7 @@ void inversaInterattivo(){
         if(info)
             printf("\nErrore %d",info);
         else {
-            puts("\nInversa:");
-            stampaMatrice(a, n, n);
+            stampaMatrice("Inversa:", a, n, n);
         }
     }
 
