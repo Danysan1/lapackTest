@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 
 // https://michaellindon.github.io/lindonslog/programming/atlas-blas-lapack-linear-algebra-libraries/
 #include <lapacke/lapacke.h>
@@ -28,19 +29,46 @@ int main(int argc, char *argv[])
     (void)(argc);
     (void)(argv);
 
-    moltiplicaMatriceVettore();
-    //moltiplicaMatriceVettoreInterattivo();
+    char buffer = 0;
+    while(1){
+        printf("Azione? < v:vett*matr | m:matr*matr | s:sistema | i:inversa | EOF:esci > ");
 
-    //moltiplicaMatrici();
-    //moltiplicaMatriciInterattivo();
+        do {
+            buffer = getchar();
+        } while (isspace(buffer));
 
-    //sistemaLineare();
-    //sistemaLineareInterattivo();
+        switch(buffer){
+        case 'v':
+            //moltiplicaMatriceVettore();
+            moltiplicaMatriceVettoreInterattivo();
+            break;
 
-    //inversa();
-    //inversaInterattivo();
+        case 'm':
+            //moltiplicaMatrici();
+            moltiplicaMatriciInterattivo();
+            break;
 
-    return 0;
+        case 's':
+            //sistemaLineare();
+            sistemaLineareInterattivo();
+            break;
+
+        case 'i':
+            //inversa();
+            inversaInterattivo();
+            break;
+
+        case EOF:
+            putchar('\n');
+            return 0;
+
+        default:
+            puts("Comando sconosciuto");
+            break;
+        }
+
+        putchar('\n');
+    }
 }
 
 
@@ -271,7 +299,7 @@ void inversaInterattivo(){
             printf("\nErrore %d",info);
         else {
             puts("\nInversa:");
-            stampaMatrice(a, 3, 3);
+            stampaMatrice(a, n, n);
         }
     }
 
