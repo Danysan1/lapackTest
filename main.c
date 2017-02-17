@@ -82,7 +82,7 @@ void sistemaLineare(){
     stampaMatrice(b, SIS_N, SIS_LDB);
 
     lapack_int indiciPivot[SIS_N];
-    lapack_int info = LAPACKE_sgesv(LAPACK_ROW_MAJOR, SIS_N, SIS_NRHS, a, SIS_LDA, indiciPivot, b, SIS_LDB);
+    lapack_int info = LAPACKE_sgesv(LAPACK_ROW_MAJOR, SIS_N, SIS_NRHS, a, SIS_LDA, indiciPivot, b, SIS_LDB); // https://software.intel.com/en-us/node/520973
     if(info)
         printf("\nErrore %d",info);
     else {
@@ -106,7 +106,7 @@ void sistemaLineareInterattivo(){
 
     const lapack_int lda=n, nrhs=1, ldb=nrhs;
     lapack_int *indiciPivot = (int*)malloc(n*sizeof(int));
-    lapack_int info = LAPACKE_sgesv(LAPACK_ROW_MAJOR, n, nrhs, a, lda, indiciPivot, b, ldb);
+    lapack_int info = LAPACKE_sgesv(LAPACK_ROW_MAJOR, n, nrhs, a, lda, indiciPivot, b, ldb); // https://software.intel.com/en-us/node/520973
     if(info)
         printf("\nErrore %d",info);
     else {
@@ -129,8 +129,8 @@ void inversa(){
     //       [ 1 1 0 ]         -1   [  1 -1 0 ]
     //   A = [ 0 1 0 ]  ==>   A   = [  0  1 0 ]
     //       [ 2 1 1 ]              [ -2  1 1 ]
-#define INV_M 3 // righe di A
 #define INV_N 3 // colonne di A
+#define INV_M INV_N // righe di A (=INV_N, matrice quadrata)
 #define INV_LDA INV_M // dimensione effettiva di A
     float a[INV_LDA * INV_N] = {1, 1, 0,
                                 0, 1, 0,
@@ -140,11 +140,11 @@ void inversa(){
     stampaMatrice(a, INV_M, INV_N);
 
     lapack_int indiciPivot[INV_N];
-    lapack_int info = LAPACKE_sgetrf(LAPACK_ROW_MAJOR, INV_M,INV_N, a, INV_LDA, indiciPivot);
+    lapack_int info = LAPACKE_sgetrf(LAPACK_ROW_MAJOR, INV_M, INV_N, a, INV_LDA, indiciPivot); // https://software.intel.com/en-us/node/520877
     if(info){
         printf("\nErrore di fattorizzazione %d, matrice non invertibile\n",info);
     } else {
-        info = LAPACKE_sgetri(LAPACK_ROW_MAJOR, INV_N, a, INV_LDA, indiciPivot);
+        info = LAPACKE_sgetri(LAPACK_ROW_MAJOR, INV_N, a, INV_LDA, indiciPivot); // https://software.intel.com/en-us/node/520946
         if(info)
             printf("\nErrore %d",info);
         else {
@@ -156,7 +156,7 @@ void inversa(){
 
 void inversaInterattivo(){
     lapack_int n;
-    printf("Ordine della matrice d invertire? ");
+    printf("Ordine della matrice? ");
     scanf("%d", &n);
 
     float *a = creaMatrice(n,n);
@@ -164,13 +164,13 @@ void inversaInterattivo(){
     puts("\nMatrice A:");
     stampaMatrice(a, n, n);
 
-    const lapack_int lda=n;
+    const lapack_int m=n, lda=m;
     lapack_int *indiciPivot = (int*)malloc(n*sizeof(int));
-    lapack_int info = LAPACKE_sgetrf(LAPACK_ROW_MAJOR, n, n, a, lda, indiciPivot);
+    lapack_int info = LAPACKE_sgetrf(LAPACK_ROW_MAJOR, m, n, a, lda, indiciPivot); // https://software.intel.com/en-us/node/520877
     if(info){
         printf("\nErrore di fattorizzazione %d, matrice non invertibile\n",info);
     } else {
-        info = LAPACKE_sgetri(LAPACK_ROW_MAJOR, n, a, lda, indiciPivot);
+        info = LAPACKE_sgetri(LAPACK_ROW_MAJOR, n, a, lda, indiciPivot); // https://software.intel.com/en-us/node/520946
         if(info)
             printf("\nErrore %d",info);
         else {
