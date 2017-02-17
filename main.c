@@ -14,6 +14,7 @@
 
 void stampaMatrice(float *matrice, unsigned righe, unsigned colonne);
 float *creaMatrice(unsigned righe, unsigned colonne);
+float *creaVettore(unsigned dim);
 
 void moltiplicaMatriceVettore();
 void moltiplicaMatriceVettoreInterattivo();
@@ -90,13 +91,27 @@ float *creaMatrice(unsigned righe, unsigned colonne){
     float *matrice = (float*)malloc(righe * colonne * sizeof(float));
 
     for(riga=0; riga<righe; riga++){
-        printf("Riga %d: ",riga);
         for(colonna=0; colonna<colonne; colonna++){
+            printf("M[%d,%d] = ", riga+1, colonna+1);
             scanf("%f", &matrice[riga*colonne + colonna]);
         }
     }
 
     return matrice;
+}
+
+
+float *creaVettore(unsigned dim){
+    printf("Creazione vettore di dimensione %d\n", dim);
+    float *vettore = (float*)malloc(dim * sizeof(float));
+
+    unsigned i;
+    for(i=0; i<dim; i++){
+        printf("V[%d] = ", i+1);
+        scanf("%f", &vettore[i]);
+    }
+
+    return vettore;
 }
 
 
@@ -128,7 +143,31 @@ void moltiplicaMatriceVettore(){
 
 
 void moltiplicaMatriceVettoreInterattivo(){
+    lapack_int m, n;
+    printf("Numero righe della matrice? ");
+    scanf("%d", &m);
+    printf("Numero colonne della matrice? ");
+    scanf("%d", &n);
 
+    float *A = creaMatrice(m,n);
+    float *x = creaVettore(n);
+    float *y = (float*)malloc(m*sizeof(float));
+    memset(y, 0, n*sizeof(float));
+    float a = 1, b = 1;
+
+    puts("\nMatrice:");
+    stampaMatrice(A, m, n);
+    puts("\nVettore:");
+    stampaMatrice(x, 1, n);
+
+    cblas_sgemv(CblasRowMajor, CblasNoTrans, m, n, a, A, n, x, 1, b, y, 1); // https://software.intel.com/en-us/node/520750
+
+    puts("\nRisultato:");
+    stampaMatrice(y, 1, m);
+
+    free(A);
+    free(x);
+    free(y);
 }
 
 
