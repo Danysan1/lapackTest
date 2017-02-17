@@ -1,11 +1,23 @@
 #include <stdio.h>
 #include <string.h>
-#include <lapacke/lapacke.h> // https://michaellindon.github.io/lindonslog/programming/atlas-blas-lapack-linear-algebra-libraries/
+
+// https://michaellindon.github.io/lindonslog/programming/atlas-blas-lapack-linear-algebra-libraries/
+#include <lapacke/lapacke.h>
+// https://software.intel.com/en-us/node/520875
+// https://software.intel.com/en-us/node/520972
+// https://software.intel.com/en-us/node/521079#CEE0C0FF-AC9E-4A8E-B6DD-F685EC92C021
 #include <cblas.h>
+// https://software.intel.com/en-us/node/520730
+// https://software.intel.com/en-us/node/520748
+// https://software.intel.com/en-us/node/520774
 
 void stampaMatrice(float *matrice, unsigned righe, unsigned colonne);
 float *creaMatrice(unsigned righe, unsigned colonne);
 
+void moltiplicaMatriceVettore();
+void moltiplicaMatriceVettoreInterattivo();
+void moltiplicaMatrici();
+void moltiplicaMatriciInterattivo();
 void sistemaLineare();
 void sistemaLineareInterattivo();
 void inversa();
@@ -16,14 +28,21 @@ int main(int argc, char *argv[])
     (void)(argc);
     (void)(argv);
 
+    moltiplicaMatriceVettore();
+    //moltiplicaMatriceVettoreInterattivo();
+
+    //moltiplicaMatrici();
+    //moltiplicaMatriciInterattivo();
+
     //sistemaLineare();
-    sistemaLineareInterattivo();
+    //sistemaLineareInterattivo();
 
     //inversa();
     //inversaInterattivo();
 
     return 0;
 }
+
 
 void stampaMatrice(float matrice[], unsigned righe, unsigned colonne){
     unsigned riga, colonna;
@@ -34,6 +53,7 @@ void stampaMatrice(float matrice[], unsigned righe, unsigned colonne){
         putchar('\n');
     }
 }
+
 
 // Alloca la matrice dinamicamente, ricordarsi la free()
 float *creaMatrice(unsigned righe, unsigned colonne){
@@ -50,6 +70,81 @@ float *creaMatrice(unsigned righe, unsigned colonne){
 
     return matrice;
 }
+
+
+void moltiplicaMatriceVettore(){
+    //      [ 1 2 1,5 ]        [ 1 ]        [ 0 ]                                        [ 11 ]
+    //  A = [ 0 3  2  ]    x = [ 2 ]    y = [ 0 ]    a = 1    b = 1    y = a*A*x + b*y = [ 14 ]
+    //                         [ 4 ]
+#define MV_M 2 // Righe di A, righe di y
+#define MV_N 3 // Colonne di A, righe di x
+#define MV_LDA MV_N // Dimensione effettiva di A
+#define MV_INC 1
+#define MV_INC_X MV_INC
+#define MV_INC_Y MV_INC
+    float A[MV_M * MV_N] = { 1, 2, 1.5,
+                             0, 3, 2};
+    float x[MV_N] = {1,2,4};
+    float y[MV_M] = {0,0};
+    float a = 1, b = 1;
+
+    puts("\nMatrice:");
+    stampaMatrice(A, MV_M, MV_N);
+    puts("\nVettore:");
+    stampaMatrice(x, 1, MV_N);
+
+    cblas_sgemv(CblasRowMajor, CblasNoTrans, MV_M, MV_N, a, A, MV_LDA, x, MV_INC_X, b, y, MV_INC_Y); // https://software.intel.com/en-us/node/520750
+
+    puts("\nRisultato:");
+    stampaMatrice(y, 1, MV_M);
+}
+
+
+void moltiplicaMatriceVettoreInterattivo(){
+
+}
+
+
+void moltiplicaMatrici(){
+    //      [ 2 1 10 ]        [  2 0 ]        [ 0 0 ]                                        [ -5 61 ]
+    //  A = [ 1 0 -1 ]    B = [  1 1 ]    C = [ 0 0 ]    a = 1    b = 1    C = a*A*B + b*C = [  3 -6 ]
+    //      [ 2 1  0 ]        [ -1 6 ]        [ 0 0 ]                                        [  5  1 ]
+#define MM_M 3 // Righe di A, righe di C
+#define MM_N 2 // Colonne di B, colonne di C
+#define MM_K 3 // Colonne di A, righe di B
+#define MM_LDA MM_K // Dimensione effettiva di A
+#define MM_LDB MM_N // Dimensione effettiva di B
+#define MM_LDC MM_N // Dimensione effettiva di C
+    float A[MM_M * MM_K] = { 2, 1,10,
+                             1, 0,-1,
+                             2, 1, 0};
+
+    float B[MM_K * MM_N] = { 2, 0,
+                             1, 1,
+                            -1, 6};
+
+    float C[MM_M * MM_N] = { 0, 0,
+                             0, 0,
+                             0, 0};
+    float a = 1, b = 1;
+
+    puts("\nMatrice A:");
+    stampaMatrice(A, MM_M, MM_K);
+    puts("\nMatrice B:");
+    stampaMatrice(B, MM_K, MM_N);
+    puts("\nMatrice C:");
+    stampaMatrice(C, MM_M, MM_N);
+
+    cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, MM_M, MM_N, MM_K, a, A, MM_LDA, B, MM_LDB, b, C, MM_LDC); // https://software.intel.com/en-us/node/520775
+
+    puts("\nRisultato:");
+    stampaMatrice(C, MM_M, MM_N);
+}
+
+void moltiplicaMatriciInterattivo(){
+
+}
+
 
 /**
  * http://www.netlib.org/lapack/explore-html/d0/db8/group__real_g_esolve_ga3b05fb3999b3d7351cb3101a1fd28e78.html#ga3b05fb3999b3d7351cb3101a1fd28e78
@@ -68,13 +163,13 @@ void sistemaLineare(){
 #define SIS_LDA SIS_N // dimensione effettiva di A
 #define SIS_NRHS 1 // numero di colonne della matrice B
 #define SIS_LDB SIS_NRHS // dimensione effettiva di B
-    float a[SIS_LDA*SIS_N] = {1,1, 1,
-                              1,2,-1,
-                              3,3,-1};
+    float a[SIS_N*SIS_N] = { 1, 1, 1,
+                             1, 2,-1,
+                             3, 3,-1};
 
-    float b[SIS_LDB*SIS_N] = {4,
-                              1,
-                              4};
+    float b[SIS_NRHS*SIS_N] = { 4,
+                                1,
+                                4};
 
     puts("\nMatrice A:");
     stampaMatrice(a, SIS_N, SIS_LDA);
@@ -90,6 +185,7 @@ void sistemaLineare(){
         stampaMatrice(b, SIS_N, SIS_LDB);
     }
 }
+
 
 void sistemaLineareInterattivo(){
     lapack_int n;
@@ -119,6 +215,7 @@ void sistemaLineareInterattivo(){
     free(indiciPivot);
 }
 
+
 /**
  * http://www.netlib.org/lapack/lapack-3.1.1/html/sgetrf.f.html
  * http://www.netlib.org/lapack/lapack-3.1.1/html/sgetri.f.html
@@ -132,9 +229,9 @@ void inversa(){
 #define INV_N 3 // colonne di A
 #define INV_M INV_N // righe di A (=INV_N, matrice quadrata)
 #define INV_LDA INV_M // dimensione effettiva di A
-    float a[INV_LDA * INV_N] = {1, 1, 0,
-                                0, 1, 0,
-                                2, 1, 1};
+    float a[INV_M * INV_N] = { 1, 1, 0,
+                               0, 1, 0,
+                               2, 1, 1};
 
     puts("\nMatrice:");
     stampaMatrice(a, INV_M, INV_N);
@@ -153,6 +250,7 @@ void inversa(){
         }
     }
 }
+
 
 void inversaInterattivo(){
     lapack_int n;
