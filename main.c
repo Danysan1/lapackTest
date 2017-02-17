@@ -14,7 +14,8 @@
 
 void stampaMatrice(char *titolo, float *matrice, unsigned righe, unsigned colonne);
 float *creaMatrice(unsigned righe, unsigned colonne);
-float *creaVettore(unsigned dim);
+float *creaMatriceVuota(unsigned righe, unsigned colonne);
+int chiediInt(char *richiesta);
 
 void moltiplicaMatriceVettore();
 void moltiplicaMatriceVettoreInterattivo();
@@ -88,7 +89,12 @@ void stampaMatrice(char *titolo, float *matrice, unsigned righe, unsigned colonn
 // Alloca la matrice dinamicamente, ricordarsi la free()
 float *creaMatrice(unsigned righe, unsigned colonne){
     unsigned riga, colonna;
-    printf("Creazione matrice %d*%d\n", righe, colonne);
+
+    if(righe == 1)
+        printf("Creazione vettore di dimensione %d\n", colonne);
+    else
+        printf("Creazione matrice %d*%d\n", righe, colonne);
+
     float *matrice = (float*)malloc(righe * colonne * sizeof(float));
 
     for(riga=0; riga<righe; riga++){
@@ -102,17 +108,18 @@ float *creaMatrice(unsigned righe, unsigned colonne){
 }
 
 
-float *creaVettore(unsigned dim){
-    printf("Creazione vettore di dimensione %d\n", dim);
-    float *vettore = (float*)malloc(dim * sizeof(float));
+// Alloca la matrice dinamicamente, ricordarsi la free()
+float *creaMatriceVuota(unsigned righe, unsigned colonne){
+    float *matrice = (float*)malloc(righe * colonne * sizeof(float));
+    memset(matrice, 0, righe * colonne * sizeof(float));
+    return matrice;
+}
 
-    unsigned i;
-    for(i=0; i<dim; i++){
-        printf("V[%d] = ", i+1);
-        scanf("%f", &vettore[i]);
-    }
-
-    return vettore;
+int chiediInt(char *richiesta){
+    int n;
+    printf(richiesta);
+    scanf("%d", &n);
+    return n;
 }
 
 
@@ -141,16 +148,11 @@ void moltiplicaMatriceVettore(){
 
 
 void moltiplicaMatriceVettoreInterattivo(){
-    lapack_int m, n;
-    printf("Numero righe della matrice? ");
-    scanf("%d", &m);
-    printf("Numero colonne della matrice? ");
-    scanf("%d", &n);
-
+    lapack_int m = chiediInt("Numero righe della matrice? ");
+    lapack_int n = chiediInt("Numero colonne della matrice? ");
     float *A = creaMatrice(m,n);
-    float *x = creaVettore(n);
-    float *y = (float*)malloc(m*sizeof(float));
-    memset(y, 0, n*sizeof(float));
+    float *x = creaMatrice(1, n);
+    float *y = creaMatriceVuota(1, m);
     float a = 1, b = 1;
 
     stampaMatrice("Matrice:", A, m, n);
@@ -198,19 +200,14 @@ void moltiplicaMatrici(){
 }
 
 void moltiplicaMatriciInterattivo(){
-    lapack_int m, n, k;
-    printf("Numero righe della prima matrice? ");
-    scanf("%d", &m);
-    printf("Numero colonne della seconda matrice? ");
-    scanf("%d", &n);
-    printf("Dimensione comune? ");
-    scanf("%d", &k);
-
+    lapack_int m  = chiediInt("Numero righe della prima matrice? ");
+    lapack_int n = chiediInt("Numero colonne della seconda matrice? ");
+    lapack_int k = chiediInt("Dimensione comune? ");
     float *A = creaMatrice(m, k);
     float *B = creaMatrice(k, n);
     float *C = (float*)malloc(m*n*sizeof(float));
-    memset(C, 0, m*n*sizeof(float));
     float a = 1, b = 1;
+    memset(C, 0, m*n*sizeof(float));
 
     stampaMatrice("Matrice A:", A, m, k);
     stampaMatrice("Matrice B:", B, k, n);
@@ -265,12 +262,9 @@ void sistemaLineare(){
 
 void sistemaLineareInterattivo(){
     const lapack_int nrhs = 1;
-    lapack_int n;
-    printf("Numero incognite? ");
-    scanf("%d", &n);
-
-    float *a = creaMatrice(n,n),
-            *b = creaMatrice(n,nrhs);
+    lapack_int n = chiediInt("Numero equazioni? ");
+    float *a = creaMatrice(n,n);
+    float *b = creaMatrice(n,nrhs);
 
     stampaMatrice("Matrice A:", a, n, n);
     stampaMatrice("Matrice B:", b, n, nrhs);
@@ -279,9 +273,8 @@ void sistemaLineareInterattivo(){
     lapack_int info = LAPACKE_sgesv(LAPACK_ROW_MAJOR, n, nrhs, a, n, indiciPivot, b, nrhs); // https://software.intel.com/en-us/node/520973
     if(info)
         printf("\nErrore %d",info);
-    else {
+    else
         stampaMatrice("Risultato:", b, n, 1);
-    }
 
     free(a);
     free(b);
@@ -324,10 +317,7 @@ void inversa(){
 
 
 void inversaInterattivo(){
-    lapack_int n;
-    printf("Ordine della matrice? ");
-    scanf("%d", &n);
-
+    lapack_int n = chiediInt("Ordine della matrice? ");
     float *a = creaMatrice(n,n);
 
     stampaMatrice("Matrice A:", a, n, n);
