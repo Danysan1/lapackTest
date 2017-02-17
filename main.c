@@ -79,11 +79,10 @@ void moltiplicaMatriceVettore(){
 #define MV_M 2 // Righe di A, righe di y
 #define MV_N 3 // Colonne di A, righe di x
 #define MV_LDA MV_N // Dimensione effettiva di A
-#define MV_INC 1
-#define MV_INC_X MV_INC
-#define MV_INC_Y MV_INC
+#define MV_INC_X 1 // Dimensione elementi in x
+#define MV_INC_Y 1 // Dimensione elementi in y
     float A[MV_M * MV_N] = { 1, 2, 1.5,
-                             0, 3, 2};
+                             0, 3, 2  };
     float x[MV_N] = {1,2,4};
     float y[MV_M] = {0,0};
     float a = 1, b = 1;
@@ -188,21 +187,21 @@ void sistemaLineare(){
 
 
 void sistemaLineareInterattivo(){
+    const lapack_int nrhs = 1;
     lapack_int n;
     printf("Numero incognite? ");
     scanf("%d", &n);
 
     float *a = creaMatrice(n,n),
-            *b = creaMatrice(n,1);
+            *b = creaMatrice(n,nrhs);
 
     puts("\nMatrice A:");
     stampaMatrice(a, n, n);
     puts("\nMatrice B:");
-    stampaMatrice(b, n, 1);
+    stampaMatrice(b, n, nrhs);
 
-    const lapack_int lda=n, nrhs=1, ldb=nrhs;
     lapack_int *indiciPivot = (int*)malloc(n*sizeof(int));
-    lapack_int info = LAPACKE_sgesv(LAPACK_ROW_MAJOR, n, nrhs, a, lda, indiciPivot, b, ldb); // https://software.intel.com/en-us/node/520973
+    lapack_int info = LAPACKE_sgesv(LAPACK_ROW_MAJOR, n, nrhs, a, n, indiciPivot, b, nrhs); // https://software.intel.com/en-us/node/520973
     if(info)
         printf("\nErrore %d",info);
     else {
@@ -262,13 +261,12 @@ void inversaInterattivo(){
     puts("\nMatrice A:");
     stampaMatrice(a, n, n);
 
-    const lapack_int m=n, lda=m;
     lapack_int *indiciPivot = (int*)malloc(n*sizeof(int));
-    lapack_int info = LAPACKE_sgetrf(LAPACK_ROW_MAJOR, m, n, a, lda, indiciPivot); // https://software.intel.com/en-us/node/520877
+    lapack_int info = LAPACKE_sgetrf(LAPACK_ROW_MAJOR, n, n, a, n, indiciPivot); // https://software.intel.com/en-us/node/520877
     if(info){
         printf("\nErrore di fattorizzazione %d, matrice non invertibile\n",info);
     } else {
-        info = LAPACKE_sgetri(LAPACK_ROW_MAJOR, n, a, lda, indiciPivot); // https://software.intel.com/en-us/node/520946
+        info = LAPACKE_sgetri(LAPACK_ROW_MAJOR, n, a, n, indiciPivot); // https://software.intel.com/en-us/node/520946
         if(info)
             printf("\nErrore %d",info);
         else {
