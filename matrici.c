@@ -267,3 +267,15 @@ void inversaInterattivo(){
     free(a);
     free(indiciPivot);
 }
+
+/**
+ * https://software.intel.com/en-us/node/469094
+ * https://software.intel.com/en-us/node/469096
+ */
+void autovettori(){
+
+}
+
+void autovettoriInterattivo(){
+
+}

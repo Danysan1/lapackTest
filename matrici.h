@@ -14,5 +14,7 @@ void sistemaLineare();
 void sistemaLineareInterattivo();
 void inversa();
 void inversaInterattivo();
+void autovettori();
+void autovettoriInterattivo();
 
 #endif // MATRICI_H
