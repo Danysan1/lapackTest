@@ -28,9 +28,6 @@ void inversaInterattivo();
 
 int main(int argc, char *argv[])
 {
-    (void)(argc);
-    (void)(argv);
-
     char buffer = 0;
     while(1){
         printf("Azione? < v:vett*matr | m:matr*matr | s:sistema | i:inversa | EOF:esci > ");
