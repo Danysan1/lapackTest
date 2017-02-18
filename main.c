@@ -110,8 +110,9 @@ float *creaMatrice(unsigned righe, unsigned colonne){
 
 // Alloca la matrice dinamicamente, ricordarsi la free()
 float *creaMatriceVuota(unsigned righe, unsigned colonne){
-    float *matrice = (float*)malloc(righe * colonne * sizeof(float));
-    memset(matrice, 0, righe * colonne * sizeof(float));
+    unsigned dim = righe * colonne * sizeof(float);
+    float *matrice = (float*)malloc(dim);
+    memset(matrice, 0, dim);
     return matrice;
 }
 
@@ -205,9 +206,8 @@ void moltiplicaMatriciInterattivo(){
     lapack_int k = chiediInt("Dimensione comune? ");
     float *A = creaMatrice(m, k);
     float *B = creaMatrice(k, n);
-    float *C = (float*)malloc(m*n*sizeof(float));
+    float *C = creaMatriceVuota(m, n);
     float a = 1, b = 1;
-    memset(C, 0, m*n*sizeof(float));
 
     stampaMatrice("Matrice A:", A, m, k);
     stampaMatrice("Matrice B:", B, k, n);
@@ -269,7 +269,7 @@ void sistemaLineareInterattivo(){
     stampaMatrice("Matrice A:", a, n, n);
     stampaMatrice("Matrice B:", b, n, nrhs);
 
-    lapack_int *indiciPivot = (int*)malloc(n*sizeof(int));
+    lapack_int *indiciPivot = (int*)malloc(n*sizeof(lapack_int));
     lapack_int info = LAPACKE_sgesv(LAPACK_ROW_MAJOR, n, nrhs, a, n, indiciPivot, b, nrhs); // https://software.intel.com/en-us/node/520973
     if(info)
         printf("\nErrore %d",info);
@@ -322,7 +322,7 @@ void inversaInterattivo(){
 
     stampaMatrice("Matrice A:", a, n, n);
 
-    lapack_int *indiciPivot = (int*)malloc(n*sizeof(int));
+    lapack_int *indiciPivot = (int*)malloc(n*sizeof(lapack_int));
     lapack_int info = LAPACKE_sgetrf(LAPACK_ROW_MAJOR, n, n, a, n, indiciPivot); // https://software.intel.com/en-us/node/520877
     if(info){
         printf("\nErrore di fattorizzazione %d, matrice non invertibile\n",info);
