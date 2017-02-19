@@ -155,12 +155,13 @@ void moltiplicaMatriciInterattivo(){
 }
 
 /**
+ * https://software.intel.com/en-us/node/520972
+ * https://software.intel.com/en-us/node/520973
  * http://www.netlib.org/lapack/explore-html/d0/db8/group__real_g_esolve_ga3b05fb3999b3d7351cb3101a1fd28e78.html#ga3b05fb3999b3d7351cb3101a1fd28e78
  * http://www.netlib.org/lapack/explore-3.1.1-html/sgesv.f.html
  * http://www.netlib.org/lapack/lug/node38.html
  * http://www.netlib.org/lapack/lapacke.html
  * https://software.intel.com/sites/products/documentation/doclib/mkl_sa/11/mkl_lapack_examples/lapacke_sgesv_col.c.htm
- * https://software.intel.com/en-us/node/520973
  * http://www.netlib.org/clapack/readme
  */
 void sistemaLineare(){
@@ -269,11 +270,32 @@ void inversaInterattivo(){
 }
 
 /**
- * https://software.intel.com/en-us/node/469094
- * https://software.intel.com/en-us/node/469096
+ * https://software.intel.com/en-us/node/521144
+ * https://software.intel.com/en-us/node/521147
+ * https://software.intel.com/en-us/node/521079
  */
 void autovettori(){
-
+    //       [ 2 1 0 ]                  [ 4 ]                  [ 1 -1  1 ]
+    //   A = [ 1 3 1 ] ==> autovalori = [ 2 ]    autovettori = [ 2  0 -1 ]
+    //       [ 0 1 2 ]                  [ 1 ]                  [ 1  1  1 ]
+#define AUT_N 3
+#define AUT_LDA AUT_N
+#define AUT_LDVL AUT_N
+#define AUT_LDVR AUT_N
+    float A[AUT_N * AUT_N] = { 2, 1, 0,
+                               1, 3, 1,
+                               0, 1, 2};
+    float wr[AUT_N];
+    float wi[AUT_N];
+    float vr[AUT_N * AUT_N];
+    lapack_int info = LAPACKE_sgeev(LAPACK_ROW_MAJOR, 'N', 'V', AUT_N, A, AUT_LDA, wr, wi, NULL, AUT_LDVL, vr, AUT_LDVR);
+    if(info)
+        printf("\nErrore %d",info);
+    else {
+        stampaMatrice("Autovalori (parte reale):", wr, AUT_N, 1);
+        stampaMatrice("Autovalori (parte immaginaria):", wi, AUT_N, 1);
+        stampaMatrice("Autovettori:", vr, AUT_N, AUT_N);
+    }
 }
 
 void autovettoriInterattivo(){
