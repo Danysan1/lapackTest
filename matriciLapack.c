@@ -153,8 +153,7 @@ void autovettori(){
     if(info)
         printf("\nErrore %d",info);
     else {
-        stampaMatrice("Autovalori (parte reale):", wr, AUT_N, 1);
-        stampaMatrice("Autovalori (parte immaginaria):", wi, AUT_N, 1);
+        stampaMatriceComplessa("Autovalori:", wr, wi, AUT_N, 1);
         stampaMatrice("Autovettori:", vr, AUT_N, AUT_N);
     }
 }
@@ -171,8 +170,7 @@ void autovettoriInterattivo(){
     if(info)
         printf("\nErrore %d",info);
     else {
-        stampaMatrice("Autovalori (parte reale):", wr, n, 1);
-        stampaMatrice("Autovalori (parte immaginaria):", wi, n, 1);
+        stampaMatriceComplessa("Autovalori:", wr, wi, n, 1);
         stampaMatrice("Autovettori:", vr, n, n);
     }
 
