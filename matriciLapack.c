@@ -160,5 +160,24 @@ void autovettori(){
 }
 
 void autovettoriInterattivo(){
+    lapack_int n = chiediInt("Ordine della matrice? ");
+    float *A = creaMatrice(n,n);
+    float *wr = creaMatriceVuota(n, 1);
+    float *wi = creaMatriceVuota(n, 1);
+    float *vr = creaMatriceVuota(n, n);
 
+    lapack_int info = LAPACKE_sgeev(LAPACK_ROW_MAJOR, 'N', 'V', n, A, n, wr, wi, NULL, n, vr, n);
+
+    if(info)
+        printf("\nErrore %d",info);
+    else {
+        stampaMatrice("Autovalori (parte reale):", wr, n, 1);
+        stampaMatrice("Autovalori (parte immaginaria):", wi, n, 1);
+        stampaMatrice("Autovettori:", vr, n, n);
+    }
+
+    free(A);
+    free(wr);
+    free(wi);
+    free(vr);
 }

@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 
         case 'A':
         case'a':
-            autovettori();
+            //autovettori();
             autovettoriInterattivo();
             break;
 
