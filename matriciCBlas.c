@@ -23,27 +23,27 @@ void moltiplicaMatriceVettore(){
     float a = 1, b = 1;
 
     stampaMatrice("Matrice:", A, MV_M, MV_N);
-    stampaMatrice("Vettore:", x, 1, MV_N);
+    stampaMatrice("Vettore:", x, MV_N, 1);
 
     cblas_sgemv(CblasRowMajor, CblasNoTrans, MV_M, MV_N, a, A, MV_LDA, x, MV_INC_X, b, y, MV_INC_Y); // https://software.intel.com/en-us/node/520750
 
-    stampaMatrice("Risultato:", y, 1, MV_M);
+    stampaMatrice("Risultato:", y, MV_M, 1);
 }
 
 void moltiplicaMatriceVettoreInterattivo(){
     int m = chiediInt("Numero righe della matrice? ");
     int n = chiediInt("Numero colonne della matrice? ");
     float *A = creaMatrice(m,n);
-    float *x = creaMatrice(1, n);
-    float *y = creaMatriceVuota(1, m);
+    float *x = creaMatrice(n, 1);
+    float *y = creaMatriceVuota(m, 1);
     float a = 1, b = 1;
 
     stampaMatrice("Matrice:", A, m, n);
-    stampaMatrice("Vettore:", x, 1, n);
+    stampaMatrice("Vettore:", x, n, 1);
 
     cblas_sgemv(CblasRowMajor, CblasNoTrans, m, n, a, A, n, x, 1, b, y, 1); // https://software.intel.com/en-us/node/520750
 
-    stampaMatrice("Risultato:", y, 1, m);
+    stampaMatrice("Risultato:", y, m, 1);
 
     free(A);
     free(x);

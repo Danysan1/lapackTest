@@ -10,6 +10,11 @@ void stampaMatrice(char *titolo, float *matrice, unsigned righe, unsigned colonn
 
 void stampaMatriceComplessa(char *titolo, float *parteReale, float *parteImmaginaria, unsigned righe, unsigned colonne){
     puts(titolo);
+    if(colonne == 1)
+        printf("Vettore di dimensione %d\n", righe);
+    else
+        printf("Matrice %d*%d\n", righe, colonne);
+
     unsigned riga, colonna;
     for(riga=0; riga<righe; riga++){
         for(colonna=0; colonna<colonne; colonna++){
@@ -34,8 +39,8 @@ void stampaMatriceComplessa(char *titolo, float *parteReale, float *parteImmagin
 float *creaMatrice(unsigned righe, unsigned colonne){
     unsigned riga, colonna;
 
-    if(righe == 1)
-        printf("Creazione vettore di dimensione %d\n", colonne);
+    if(colonne == 1)
+        printf("Creazione vettore di dimensione %d\n", righe);
     else
         printf("Creazione matrice %d*%d\n", righe, colonne);
 

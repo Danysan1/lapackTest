@@ -121,7 +121,7 @@ void sistemaLineareInterattivo(){
     if(info)
         printf("\nErrore %d",info);
     else
-        stampaMatrice("Risultato:", b, n, 1);
+        stampaMatrice("Risultato:", b, n, nrhs);
 
     free(a);
     free(b);
